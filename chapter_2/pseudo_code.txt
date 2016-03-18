@@ -1,0 +1,22 @@
+
+START
+a method that returns the sum of two integers
+
+
+
+a method that takes an array of strings, and returns a string that is all those strings concatenated together
+START
+SET concatenated_string variable = ""
+FOR value in array
+  concatenated_string += space + value
+END
+
+
+a method that takes an array of integers, and returns a new array with every other element
+START
+
+SET odd_array = []
+FOR element in array
+  if element is odd
+    add element to odd_array
+END
