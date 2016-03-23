@@ -85,5 +85,4 @@ loop do
   end
 end
 
-prompt "Your score: #{scores[:player]}, Computer score: #{scores[:computer]}"
 prompt 'Thank you for playing. Good bye!'
