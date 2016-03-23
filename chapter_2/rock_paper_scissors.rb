@@ -73,8 +73,9 @@ loop do
   display_result(VALID_CHOICES[choice], computer_choice)
   update_scores(scores, VALID_CHOICES[choice], computer_choice)
   prompt "Your score: #{scores[:player]}, Computer score: #{scores[:computer]}"
+
   if game_over?(scores)
-    prompt 'Do you want a rematch?'
+    prompt 'Do you want to play again?'
     answer = gets.chomp
     if answer.downcase.start_with? 'y'
       reset(scores)
