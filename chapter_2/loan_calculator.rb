@@ -15,8 +15,8 @@ def prompt(text)
   puts "=> #{text}"
 end
 
-def number?(string)
-  true if Float(string) > 0 && !/,/.match(string)
+def number?(input)
+  Float(input) > 0 && !/,/.match(input)
 rescue
   prompt 'Sorry, valid input includes only positive whole and decimal numbers.'
 end
@@ -25,10 +25,10 @@ def calculate_payment(amount, annual_rate, num_payments)
   amount * (annual_rate / 12) / (1 - (1 + annual_rate / 12)**-num_payments)
 end
 
-def get_input_for(value)
+def process_input_for(input_type)
   input = ''
   loop do
-    prompt "Please enter the #{value}:"
+    prompt "Please enter the #{input_type}:"
     input = gets.chomp
     break if number? input
   end
@@ -39,9 +39,9 @@ end
 prompt 'Welcome to the loan payment calculator!'
 
 loop do
-  loan_amount = get_input_for 'loan amount'
-  annual_rate = (get_input_for 'Annual Percentage Rate (APR)') / 100
-  num_years = (get_input_for 'duration of the loan in years').to_i
+  loan_amount = process_input_for 'loan amount'
+  annual_rate = (process_input_for 'Annual Percentage Rate (APR)') / 100
+  num_years = (process_input_for 'duration of the loan in years').to_i
 
   num_payments =  num_years * 12
 
