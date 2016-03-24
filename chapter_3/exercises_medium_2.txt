@@ -1,0 +1,29 @@
+Question 1
+  answer:  sum = 0
+           munsters.each do |key,value|
+             if value['gender'] == 'male'
+               sum +=  value['age']
+             end
+           end
+
+Question 2
+answer:  munsters.each do |key, value|
+           puts "#{key} is a #{value['age']} year old #{value['gender']}."
+         end
+Question 3
+answer:  make both operators inside the method the same (+=)
+Question 4
+answer:  sentence = "Humpty Dumpty sat on a wall."
+         sentence_array = sentence.split /\W/
+         sentence_array.reverse!
+         backwards = sentence_array.join(' ') + '.'
+Question 5
+answer: 34 (Original answer value not changed by using it as method parameter because method was assigned to new_answer)
+Question 6
+answer: The demo hash is the munsters hash, so munsters hash will be modified by the mess_with_demographics method.
+Question 7
+answer:  'paper'  (inner is paper, rock; next out is paper, last is paper)
+Question 8
+answer:  return value of foo is always 'yes' and 'yes' doesn't ever == 'no'
+Question 9
+answer:
