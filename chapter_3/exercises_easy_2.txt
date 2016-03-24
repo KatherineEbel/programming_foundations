@@ -1,0 +1,28 @@
+Question 1
+  answer: ages.has_key? "Spot"
+          bonus: include? member?
+
+Question 2
+  answer: sum = 0
+          ages.each_value { |value| sum += value }
+          alternate solution ages.values.inject(:+)
+Question 3
+answer: ages.delete_if {|key, value| value >= 100}
+Question 4
+answer:
+  1. munsters_description.gsub('M', 'm')
+  2. munsters_description.swapcase
+  3. munsters_description.downcase
+  4. munsters_description.upcase
+Question 5
+answer: ages.merge! additional_ages
+Question 6
+answer:  ages.values.min
+Question 7
+answer:  advice.include? "Dino"
+Question 8
+answer:
+Question 9
+answer:
+Question 10
+  answer:

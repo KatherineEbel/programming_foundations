@@ -1,0 +1,13 @@
+Question 1
+  answer:  flintstones = %w(Fred Barney Wilma Betty BamBam Pebbles)
+Question 2
+answer: flintstones << 'Dino'
+Question 3
+answer: flinstones += %w(Dino Hoppy)
+Question 4
+answer: advice.slice! "Few things in life are as important as "
+        using slice version of method will not modify the original string.
+Question 5
+answer: statement.count 't'
+Question 6
+  answer:  title.center 40

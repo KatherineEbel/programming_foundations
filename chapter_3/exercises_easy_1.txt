@@ -1,0 +1,39 @@
+Question 1
+  answer: each number value printed to new line. original array not mutated, since it wasn't assigned to the array.uniq function. uniq returns a new array.
+
+Question 2
+  answer:
+  1. != means not equal for example answer != 5 (returns true if answer value not 5) as opposed to answer == 5 (returns true if answer value is 5)
+  2. putting '!' before something like !user_name will flip return from true to         false or false to true, depending on initial value.
+  3. conventions like words.uniq! (! after method name) usually mean that the function will mutate the object that is being operated on.
+
+Question 3
+  answer: advice.sub!('important', 'urgent')
+
+Question 4
+  answer: delete_at(1) will delete value at index of parameter
+          delete(1) will delete a value of parameter if exists
+
+Question 5
+  answer: (10..100).cover? 42
+
+Question 6
+  answer: famous_words.prepend "Four score and "
+          OR
+          "Four score and ".concat famous_words
+
+Question 7
+  answer: add_eight will be called 5 times with final value of 42
+
+Question 8
+  answer: flintstones.flatten!
+
+Question 9
+  answer: barney = flintstones.select { |key, value| key == 'Barney' }
+
+Question 10
+  answer:
+    hash = {}
+    flintstones.each_index do |index|
+      hash[flintstones[index]] = index
+    end
