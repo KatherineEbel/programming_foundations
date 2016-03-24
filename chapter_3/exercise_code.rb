@@ -77,12 +77,24 @@ munsters = {
 # p backwards
 
 # Question 5
-answer = 42
+# answer = 42
+#
+# def mess_with_it(some_number)
+#   some_number += 8
+# end
+#
+# new_answer = mess_with_it(answer)
+#
+# p answer - 8
 
-def mess_with_it(some_number)
-  some_number += 8
+# Exercises: medium 3
+
+# Question 5
+
+def color_valid(color)
+  color == 'blue' || color == 'green'
 end
 
-new_answer = mess_with_it(answer)
-
-p answer - 8
+puts color_valid 'blue'
+puts color_valid 'green'
+puts color_valid 'purple'
