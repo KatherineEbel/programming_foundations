@@ -27,3 +27,6 @@
 # Question 4 easy-2
 munsters_description = "The Munsters are creepy in a good way."
 munsters_description.gsub('M', 'm')
+
+# Question 5
+ages = { "Herman" => 32, "Lily" => 30, "Grandpa" => 5843, "Eddie" => 10 }

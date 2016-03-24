@@ -1,0 +1,47 @@
+Question 1
+  answer: 10.times {|n| puts "The Flintstones Rock!".insert(0, (' ' * n)) }
+Question 2
+  answer: statement = "The Flintstones Rock"
+          hash = {}
+          statement.each_char do |char|
+            hash[char] = statement.delete(' ').scan(char).count
+          end
+          hash.delete ' '
+Question 3
+  answer: (40+2) is an integer and can't be directly added to string
+          puts "the value of 40 + 2 is " + (40 + 2).to_s  cast to string
+          OR
+          puts "the value of 40 + 2 is #{(40 + 2)}" interpolation
+Question 4
+  answer: 1,3 & 1,2
+Question 5
+answer: def factors(number)
+          dividend = number
+          divisors = []
+          while dividend > 0 do
+            divisors << number / dividend if number % dividend == 0
+            dividend -= 1
+          end
+          divisors
+        end
+        Bonus 1: number % dividend checks to make sure number can be divided by dividend evenly which is what makes it a factor.
+        Bonus 2: the last line makes divisors the return value of factors method.
+Question 6
+answer: rolling_buffer1 will modify the array that was passed in.
+        rolling_buffer2 will not modify the array
+Question 7
+answer: methods don't have access to variables that are not local to the method. Can fix by defining limit right before while loop, or include as a parameter to fib method.
+Question 8
+answer: def titleize!(string)
+        string_array = string.split(' ')
+        string_array.each { |word| word.capitalize!}.join ' '
+end
+Question 9
+answer:  hash = munsters.each do |key, value|
+           case value['age']
+           when 0..18 then value['age group'] = 'kid'
+           when 18..65 then value['age group'] = 'adult'
+           else
+             value['age group'] = 'senior'
+           end
+         end

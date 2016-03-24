@@ -21,8 +21,8 @@ answer:  ages.values.min
 Question 7
 answer:  advice.include? "Dino"
 Question 8
-answer:
+answer: flintstones.find_index { |name| name.start_with? "Be" }
 Question 9
-answer:
+answer:  flintstones.map! { |name| name.slice!(0, 3) }
 Question 10
-  answer:
+  answer: Do Question 9 in one line...did it the first time :)
