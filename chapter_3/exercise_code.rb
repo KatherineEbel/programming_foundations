@@ -91,10 +91,88 @@ munsters = {
 
 # Question 5
 
-def color_valid(color)
-  color == 'blue' || color == 'green'
+# def color_valid(color)
+#   color == 'blue' || color == 'green'
+# end
+#
+# puts color_valid 'blue'
+# puts color_valid 'green'
+# puts color_valid 'purple'
+
+# Exercises: Hard 1
+# def mess_with_vars(one, two, three)
+#   one = two
+#   two = three
+#   three = one
+# end
+#
+# one = "one"
+# two = "two"
+# three = "three"
+#
+# mess_with_vars(one, two, three)
+#
+# puts "one is: #{one}"
+# puts "two is: #{two}"
+# puts "three is: #{three}"
+
+# def mess_with_vars(one, two, three)
+#   one = "two"
+#   two = "three"
+#   three = "one"
+# end
+#
+# one = "one"
+# two = "two"
+# three = "three"
+#
+# mess_with_vars(one, two, three)
+#
+# puts "one is: #{one}"
+# puts "two is: #{two}"
+# puts "three is: #{three}"
+
+# def mess_with_vars(one, two, three)
+#   one.gsub!("one","two")
+#   two.gsub!("two","three")
+#   three.gsub!("three","one")
+# end
+#
+# one = "one"
+# two = "two"
+# three = "three"
+#
+# mess_with_vars(one, two, three)
+#
+# puts "one is: #{one}"
+# puts "two is: #{two}"
+# puts "three is: #{three}"
+
+# Question 4
+# def create_uuid
+#   values = %w(0 1 2 3 4 5 6 7 8 9 a b c d e f)
+#   uuid = ''
+#   8.times { |_| uuid += values.sample}
+#   uuid += '-'
+#   3.times do |_|
+#     4.times { |_| uuid += values.sample}
+#     uuid += '-'
+#   end
+#   12.times { |_| uuid += values.sample}
+#   uuid
+# end
+#
+# uuid = create_uuid
+# puts uuid
+
+def dot_separated_ip_address?(input_string)
+  dot_separated_words = input_string.split(".")
+  false if dot_separated_words.size != 4
+  while dot_separated_words.size > 0 do
+    word = dot_separated_words.pop
+    false if !is_a_number?(word)
+  end
+  return true
 end
 
-puts color_valid 'blue'
-puts color_valid 'green'
-puts color_valid 'purple'
+p dot_separated_ip_address? '10.2.3'

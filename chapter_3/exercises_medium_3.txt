@@ -1,0 +1,16 @@
+Question 1
+  answer: objects will keep same id's until they are reassigned
+Question 2
+answer:
+Question 3
+answer: My string looks like this now: pumpkins
+        My array looks like this now: ["pumpkins", "rutabaga"]
+        the += operation on the string variable inside the method creates a new object, whereas the << operation on the array doesn't create a new array, but adds to the initial object.
+Question 4
+answer: operation performed on string modified the passed in string object, whereas array passed in was assigned to a new array, so original wasn't modified.
+Question 5
+answer: def color_valid(color)
+          color == 'blue' || color == 'green'
+        end
+
+        method will return evaluation of statement automatically
