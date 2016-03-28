@@ -1,0 +1,22 @@
+Tic Tac Toe
+
+1. Display the initial empty 3x3 board
+2. Ask the user to mark a square.
+3. computer marks a square
+4. Display the updated board state.
+5. If winner, display winner.
+6. If board is full, display tie.
+7. If neither winner nor board is full, go to #2
+8. Play again?
+9. If yes, go to #1
+10. good bye!
+
+winner
+
+check for equal horizontal markers
+check for equal vertical markers
+check for equal diagonal markers
+
+winning columns [1,2,3]  [1,4,7]  [1,5,9]
+                [4,5,6]  [2,5,8]  [3,5,7]
+                [7,8,9]  [3,6,9]
