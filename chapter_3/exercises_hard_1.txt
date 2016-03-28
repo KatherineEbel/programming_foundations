@@ -1,0 +1,32 @@
+Question 1
+  answer: error undefined variable (greeting variable declared inside if block so only available in that scope)
+Question 2
+answer: { a: 'hi there' } because informal_greeting points to greetings hash, and was added to using the << method, so it modifies the greetings hash.
+Question 3
+answer: A)
+Question 4
+answer:   def create_uuid
+           values = %w(0 1 2 3 4 5 6 7 8 9 a b c d e f)
+           uuid = ''
+           8.times { |_| uuid += values.sample}
+           uuid += '-'
+           3.times do |_|
+             4.times { |_| uuid += values.sample}
+             uuid += '-'
+           end
+           12.times { |_| uuid += values.sample}
+           uuid
+         end
+
+         uuid = create_uuid
+         puts uuid
+Question 5
+answer: def dot_separated_ip_address?(input_string)
+          dot_separated_words = input_string.split(".")
+          return false if dot_separated_words.size != 4
+          while dot_separated_words.size > 0 do
+            word = dot_separated_words.pop
+            return false if !is_a_number?(word)
+          end
+          true
+        end
