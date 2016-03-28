@@ -13,11 +13,11 @@ current_player = COMP_MARK
 def joinor(array, last_delimeter)
   string = ''
   array.each do |item|
-    if item == array.last
-      string << "#{last_delimeter} #{item}"
-    else
-      string << "#{item}, "
-    end
+    string += if item == array.last
+                "#{last_delimeter} #{item}"
+              else
+                "#{item}, "
+              end
   end
   string
 end
@@ -86,7 +86,6 @@ def board_full?(board)
 end
 
 def player_turn!(board)
-
   square = INIT_MARK
   loop do
     available = available_squares(board)
@@ -101,21 +100,20 @@ end
 def computer_turn!(board)
   # priority offense, then defense, then simply random available
   square = computer_offense?(board) ||
-  square = computer_defense?(board) ||
-  pick_middle?(board) ||
-  square = available_squares(board).sample
+           computer_defense?(board) ||
+           pick_middle?(board) ||
+           available_squares(board).sample
   board[square] = COMP_MARK
 end
 
+# AI for computer selections
 def eval_state(board, mark)
   WIN.each do |line|
     # find line with 2 player marks
-    if board.values_at(*line).count(mark) == 2
-      squares = board.values_at(*line)
-      square = line.select { |value| board[value] == " "}
-      # returns corresponding square number on board
-      return square.first
-    end
+    next unless board.values_at(*line).count(mark) == 2
+    square = line.select { |value| board[value] == " " }
+    # returns corresponding square number on board
+    return square.first
   end
   false
 end
@@ -127,7 +125,6 @@ def pick_middle?(board)
   end
 end
 
-# AI for computer selections
 def computer_defense?(board)
   # if player has two markers on a winning line mark the third one
   eval_state(board, PLAYER_MARK)
@@ -167,11 +164,10 @@ def round_over(board, scores)
   if won?(board)
     prompt "#{winner?(board)} won!"
     update(scores, board)
-    show scores
   else
     prompt "It's a tie!"
-    show scores
   end
+  show scores
 end
 
 def continue?(scores)
@@ -182,7 +178,7 @@ def continue?(scores)
     prompt "Round Over! Would you like to continue? (Y)"
   end
   answer = gets.chomp
-  answer.downcase =='y'
+  answer.downcase.start_with? 'y'
 end
 
 def game_over?(scores)
@@ -193,11 +189,16 @@ def reset(scores)
   scores = scores.each_key { |player| scores[player] = 0 }
 end
 
+# -----------------------------------------
+# main game
 prompt "Let's play Tic-Tac-Toe! Best out of 5 games wins!"
 
+# main loop
 loop do
   board = initialize_board
   current_player = start_game current_player
+
+  # round loop
   loop do
     display(board)
     place_piece! board, current_player
