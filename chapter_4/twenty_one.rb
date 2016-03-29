@@ -1,8 +1,15 @@
 require 'pry'
 
 hands = { 'Player' => [], 'Dealer' => [] }
+scores = { player: 0, dealer: 0 }
 STAY = 17
 TWENTY_ONE = 21
+
+welcome_message = <<MSG
+  Welcome to the game of 21!
+  Beat the dealer to 5 points to win!
+  One point for every round you win.
+MSG
 
 def prompt(message)
   puts "=> #{message}"
@@ -39,17 +46,17 @@ def value_for(card)
   end
 end
 
-# calculate aces (should ace be one or 11?)
-def calc_ace_value(current_hand_total)
-  current_hand_total >= 10 ? 1 : 11
-end
-
 # sort aces to end of hand for easier calculation
 def sort_aces(hand)
   aces = hand.reject { |card| card != 'A' }
   hand.delete 'A'
   hand << aces
   hand.flatten!
+end
+
+# calculate aces (should ace be one or 11?)
+def calc_ace_value(current_hand_total)
+  current_hand_total > 10 ? 1 : 11
 end
 
 def calculate(hand)
@@ -69,8 +76,7 @@ end
 
 # shown to help player keep track of their current total
 def show_total(hand)
-  sum = calculate(hand)
-  prompt "Your total is: #{sum}"
+  prompt "Your total is: #{calculate(hand)}"
 end
 
 def bust?(hand)
@@ -85,13 +91,11 @@ def player_turn(deck, hands)
     break unless answer.downcase.start_with? 'h'
     hand << deal_card(deck)
     break if bust? hand
-    show hands
   end
 end
 
 def dealer_stays?(total, hands)
-  total >= STAY || total > calculate(hands['Player']) ||
-    total >= TWENTY_ONE
+  total >= STAY || total > calculate(hands['Player'])
 end
 
 def dealer_turn(deck, hands)
@@ -99,7 +103,18 @@ def dealer_turn(deck, hands)
   loop do
     total = calculate hand
     dealer_stays?(total, hands) ? break : hand << deal_card(deck)
+    break if bust? hand
   end
+end
+
+def play_round(deck, hands, scores)
+  deal(deck, hands)
+  show hands
+  player_turn(deck, hands)
+  dealer_turn(deck, hands)
+  display_results(hands)
+  update_scores(hands, scores)
+  display scores
 end
 
 # win? and tie? both return bools
@@ -115,8 +130,8 @@ end
 
 # returns string for display_results
 def calculate_result(hands)
-  player_total = calculate hands['Player']
-  dealer_total = calculate hands['Dealer']
+  player_total = calculate(hands['Player'])
+  dealer_total = calculate(hands['Dealer'])
   return "It's a Tie!" if tie?(player_total, dealer_total)
   win?(player_total, dealer_total) ? "You Won!" : "Sorry, You Lost!"
 end
@@ -128,30 +143,48 @@ def display_results(hands)
   prompt result
 end
 
-def play_again?
-  prompt "Play again? (y/n)"
+def update_scores(hands, scores)
+  result = calculate_result(hands)
+  case result
+  when "You Won!" then scores[:player] += 1
+  when "Sorry, You Lost!" then scores[:dealer] += 1
+  end
+end
+
+def display(scores)
+  prompt "You score: #{scores[:player]}\t Dealer score: #{scores[:dealer]}"
+end
+
+def play_again?(scores)
+  prompt game_over?(scores) ? "Play again? (y/n)" : "Continue? (y/n)"
   answer = gets.chomp
   answer.downcase.start_with? 'y'
 end
 
+def game_over?(scores)
+  scores.value? 5
+end
+
 # empties hands after each round
-def reset(hands)
+def empty(hands)
   hands.each_key { |player| hands[player] = [] }
 end
 
-# main game loop
-loop do
-  deck = init_deck
-  deal(deck, hands)
-  loop do
-    show hands
-    player_turn(deck, hands)
-    dealer_turn(deck, hands)
-    display_results hands
-    break
-  end
-  break unless play_again?
-  reset hands
+def reset(scores)
+  scores.each_key { |player| scores[player] = 0 }
 end
+
+system 'clear'
+prompt welcome_message
+# main game loop
+  loop do
+    prompt "Dealing cards!"
+    deck = init_deck
+    play_round(deck, hands, scores)
+    break if game_over?(scores) || !play_again?(scores)
+    reset scores if game_over? scores
+    empty hands
+    system 'clear'
+  end
 
 prompt "Thanks for playing #{TWENTY_ONE}!"
