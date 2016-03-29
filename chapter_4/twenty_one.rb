@@ -83,24 +83,25 @@ end
 def player_turn(deck, hands)
   hand = hands['Player']
   loop do
-    break if bust? hand
     prompt "#{show_total hand}Would you like to 'hit' or 'stay'? (h/s)"
     answer = gets.chomp
     break unless answer.downcase.start_with? 'h'
     hand << deal_card(deck)
+    break if bust? hand
     show hands
   end
+end
+
+def dealer_stays?(total, hands)
+  total >= STAY || total > calculate(hands['Player']) ||
+    total >= TWENTY_ONE
 end
 
 def dealer_turn(deck, hands)
   hand = hands['Dealer']
   loop do
     total = calculate hand
-    if total >= STAY || total > calculate(hands['Player']) ||
-       total >= TWENTY_ONE
-      break
-    end
-    hand << deal_card(deck)
+    dealer_stays?(total, hands) ? break : hand << deal_card(deck)
   end
 end
 
@@ -123,7 +124,7 @@ end
 
 def display_results(hands)
   prompt "Dealer had: #{hands['Dealer'].join(' ')}" \
-         " You had: #{hands['Player'].join(' ')}"
+         "\tYou had: #{hands['Player'].join(' ')}"
   result = calculate_result(hands)
   prompt result
 end
