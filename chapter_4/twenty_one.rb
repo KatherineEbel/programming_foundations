@@ -17,18 +17,14 @@ def init_deck
   end
 end
 
-def value_for(card)
-  case card
-  when (2..10) then card
-  when 'J', 'Q', 'K' then 10
+# deal initial hands
+def deal(deck, hands)
+  hands.each do |_player, hand|
+    2.times { hand << deal_card(deck) }
   end
 end
 
-# calculate aces
-def calc_ace_value(current_hand_total)
-  current_hand_total >= 10 ? 1 : 11
-end
-
+# dealing a single card or hit
 def deal_card(deck)
   cards = deck.values
   suit = cards[rand cards.size]
@@ -36,8 +32,20 @@ def deal_card(deck)
   suit.delete card
 end
 
+def value_for(card)
+  case card
+  when (2..10) then card
+  when 'J', 'Q', 'K' then 10
+  end
+end
+
+# calculate aces (should ace be one or 11?)
+def calc_ace_value(current_hand_total)
+  current_hand_total >= 10 ? 1 : 11
+end
+
+# sort aces to end of hand for easier calculation
 def sort_aces(hand)
-  # sort aces to end of hand for easier calculation
   aces = hand.reject { |card| card != 'A' }
   hand.delete 'A'
   hand << aces
@@ -54,30 +62,19 @@ def calculate(hand)
   sum
 end
 
-def deal(deck, hands)
-  hands.each do |_player, hand|
-    2.times { hand << deal_card(deck) }
-  end
-end
-
 def show(hands)
   prompt "Your hand: #{hands['Player'].join ' '}"
   prompt "Dealer shows: #{hands['Dealer'].first}"
 end
 
+# shown to help player keep track of their current total
 def show_total(hand)
   sum = calculate(hand)
   prompt "Your total is: #{sum}"
 end
 
 def bust?(hand)
-  calculate(hand) > 21
-end
-
-def play_again?
-  prompt "Play again? (y/n)"
-  answer = gets.chomp
-  answer.downcase.start_with? 'y'
+  calculate(hand) > TWENTY_ONE
 end
 
 def player_turn(deck, hands)
@@ -105,6 +102,7 @@ def dealer_turn(deck, hands)
   end
 end
 
+# win? and tie? both return bools
 def win?(player_total, dealer_total)
   dealer_total > TWENTY_ONE ||
     player_total <= TWENTY_ONE && player_total > dealer_total
@@ -115,6 +113,7 @@ def tie?(player_total, dealer_total)
     player_total > TWENTY_ONE && dealer_total > TWENTY_ONE
 end
 
+# returns string for display_results
 def calculate_result(hands)
   player_total = calculate hands['Player']
   dealer_total = calculate hands['Dealer']
@@ -129,10 +128,18 @@ def display_results(hands)
   prompt result
 end
 
+def play_again?
+  prompt "Play again? (y/n)"
+  answer = gets.chomp
+  answer.downcase.start_with? 'y'
+end
+
+# empties hands after each round
 def reset(hands)
   hands.each_key { |player| hands[player] = [] }
 end
 
+# main game loop
 loop do
   deck = init_deck
   deal(deck, hands)
@@ -147,4 +154,4 @@ loop do
   reset hands
 end
 
-prompt "Thanks for playing 21!"
+prompt "Thanks for playing #{TWENTY_ONE}!"
