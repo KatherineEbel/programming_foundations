@@ -20,3 +20,6 @@ check for equal diagonal markers
 winning columns [1,2,3]  [1,4,7]  [1,5,9]
                 [4,5,6]  [2,5,8]  [3,5,7]
                 [7,8,9]  [3,6,9]
+
+                line = [1,2,3]
+                line.select { |value| board[value] == " "}

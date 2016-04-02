@@ -4,6 +4,7 @@ hands = { 'Player' => [], 'Dealer' => [] }
 scores = { player: 0, dealer: 0 }
 STAY = 17
 TWENTY_ONE = 21
+WIN = 5
 
 welcome_message = <<MSG
   Welcome to the game of 21!
@@ -162,7 +163,7 @@ def play_again?(scores)
 end
 
 def game_over?(scores)
-  scores.value? 5
+  scores.value? WIN
 end
 
 # empties hands after each round
