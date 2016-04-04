@@ -1,45 +1,53 @@
+# is this design, with Human and Computer sub-classes, better? Why or why not?
+# What is the primary improvement of this design?
+# What is the primary drawback of this design?
+# Better because each subclass of Player contains it's own individual behaviors specific to it's type, and all the Base functionality is defined by the superclass Player. This way if we needed to add more behavior to the basic Player class, it would be easy to implement in the Human and Computer subclasses. Or if we wanted to add more specific functionality to one of the subclasses we wouldn't have to modify anything about the other subclass. To me this is the major improvement that this change provides. The only drawback to me seems to be writing more code, but it is code that makes the program easier to modify in the future.
+
+
 class Player
   attr_accessor :move, :name
-  def initialize(player_type = :human)
-    @player_type = player_type
-    @move = nil
+  def initialize
     set_name
     # maybe a "name"? what about a "move"?
   end
 
+  # def set_name
+  #   self.name = name
+  # end
+end
+
+class Human < Player
   def set_name
-    if human?
-      n = nil
-      loop do
-        puts "What's your name?"
-        n = gets.chomp
-        break unless n.empty?
-      end
-      self.name = n
-    else
-      self.name = ['R2D2', 'Hal', 'Chappie', 'Sonny', 'Number 5'].sample
+    n = nil
+    loop do
+      puts "What's your name?"
+      n = gets.chomp
+      break unless n.empty?
     end
+    self.name = n
   end
 
   def choose
-    if human?
-      choice = ''
-      loop do
-        puts "Please choose rock, paper, or scissors"
-        choice = gets.chomp
-        break if ['rock', 'paper', 'scissors'].include?(choice)
-        puts "Sorry, invalid choice."
-      end
-      self.move = choice
-    else
-      self.move = ['rock', 'paper', 'scissors'].sample
+    choice = nil
+    loop do
+      puts "Please choose rock, paper, or scissors"
+      choice = gets.chomp
+      break if ['rock', 'paper', 'scissors'].include?(choice)
+      puts "Sorry, invalid choice."
     end
+    self.move = choice
   end
 end
 
-  def human?
-    @player_type == :human
+class Computer < Player
+  def set_name
+    self.name = ['R2D2', 'Hal', 'Chappie', 'Sonny', 'Number 5'].sample
   end
+
+  def choose
+    self.move = ['rock', 'paper', 'scissors'].sample
+  end
+end
 
 class Move
   def initialize
@@ -62,8 +70,8 @@ end
 class RPSGame
   attr_accessor :human, :computer
   def initialize
-    @human = Player.new :human
-    @computer = Player.new :computer
+    @human = Human.new
+    @computer = Computer.new
   end
 
   def display_welcome_message
