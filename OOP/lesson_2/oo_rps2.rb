@@ -3,6 +3,8 @@
 # What is the primary drawback of this design?
 # Better because each subclass of Player contains it's own individual behaviors specific to it's type, and all the Base functionality is defined by the superclass Player. This way if we needed to add more behavior to the basic Player class, it would be easy to implement in the Human and Computer subclasses. Or if we wanted to add more specific functionality to one of the subclasses we wouldn't have to modify anything about the other subclass. To me this is the major improvement that this change provides. The only drawback to me seems to be writing more code, but it is code that makes the program easier to modify in the future.
 
+# what is the primary improvement and drawback of this new design?
+# Extracting all the move comparison logic to it's own class simplifies the game class, and makes the game more flexible.
 
 class Player
   attr_accessor :move, :name
@@ -51,13 +53,13 @@ end
 
 class Move
   attr_reader :value
-  VALUES = ['rock', 'paper', 'scissors']
+  VALUES = ['rock', 'paper', 'scissors'].freeze
   def initialize(value)
     @value = value
   end
 
   def to_s
-    self.value
+    value
   end
 
   def scissors?
@@ -89,16 +91,16 @@ class Move
   end
 end
 
-class Rule
-  def initialize
-    # not sure what the "state" of a rule object should be
-  end
-end
+# class Rule
+#   def initialize
+#     # not sure what the "state" of a rule object should be
+#   end
+# end
 
 # not sure where "compare" goes yet
-def compare(move1, move2)
-
-end
+# def compare(move1, move2)
+#
+# end
 
 class RPSGame
   attr_accessor :human, :computer
@@ -115,10 +117,12 @@ class RPSGame
     puts "Thanks for playing Rock, Paper, Scissors #{human.name}! Good bye!"
   end
 
-  def display_winner
+  def display_moves
     puts "#{human.name} chose #{human.move}."
     puts "#{computer.name} chose #{computer.move}."
+  end
 
+  def display_winner
     if human.move > computer.move
       puts "#{human.name} won!"
     elsif human.move < computer.move
@@ -126,21 +130,6 @@ class RPSGame
     else
       puts "It's a Tie!"
     end
-
-    # case human.move
-    # when 'rock'
-    #   puts "It's a tie!" if computer.move == 'rock'
-    #   puts "#{human.name} won!" if computer.move == 'scissors'
-    #   puts "#{computer.name} Won!" if computer.move == 'paper'
-    # when 'paper'
-    #   puts "It's a tie!" if computer.move == 'paper'
-    #   puts "#{human.name} won!" if computer.move == 'rock'
-    #   puts "#{computer.name} Won!" if computer.move == 'scissors'
-    # when 'scissors'
-    #   puts "It's a tie!" if computer.move == 'scissors'
-    #   puts "#{human.name} won!" if computer.move == 'paper'
-    #   puts "#{computer.name} Won!" if computer.move == 'rock'
-    # end
   end
 
   def play_again?
@@ -151,7 +140,7 @@ class RPSGame
       break if ['y', 'n'].include? answer.downcase
       puts "Sorry, must be y or n"
     end
-    return answer == 'y' ? true : false
+    answer == 'y' ? true : false
   end
 
   def play
@@ -159,6 +148,7 @@ class RPSGame
     loop do
       human.choose
       computer.choose
+      display_moves
       display_winner
       break unless play_again?
     end
