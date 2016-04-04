@@ -13,14 +13,31 @@
 # - compare
 
 class Player
-  def initialize
-    # maybe a "name"? what aabout a "move"?
+  attr_reader :move
+  def initialize(player_type = :human)
+    @player_type = player_type
+    @move = nil
+    # maybe a "name"? what about a "move"?
   end
 
   def choose
-
+    if human?
+      loop do
+        puts "Please choose rock, paper, or scissors"
+        choice = gets.chomp
+        break if ['rock', 'paper', 'scissors'].include?(choice)
+        puts "Sorry, invalid choice."
+      end
+      self.move = choice
+    else
+      self.move = ['rock', 'paper', 'scissors'].sample
+    end
   end
 end
+
+  def human?
+    @player_type == :human
+  end
 
 class Move
   def initialize
@@ -43,8 +60,16 @@ end
 class RPSGame
   attr_accessor :human, :computer
   def initialize
-    @human = Player.new
-    @computer = Player.new
+    @human = Player.new :human
+    @computer = Player.new :computer
+  end
+
+  def display_welcome_message
+    puts "Welcome to Rock, Paper, Scissors!"
+  end
+
+  def display_goodbye_message
+    puts "Thanks fo playing Rock, Paper, Scissors"
   end
 
   def play
@@ -54,3 +79,6 @@ class RPSGame
     display_winner
     display_goodbye_message
   end
+end
+
+RPSGame.new.play
