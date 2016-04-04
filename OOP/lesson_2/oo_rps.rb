@@ -13,7 +13,7 @@
 # - compare
 
 class Player
-  attr_reader :move
+  attr_accessor :move
   def initialize(player_type = :human)
     @player_type = player_type
     @move = nil
@@ -22,6 +22,7 @@ class Player
 
   def choose
     if human?
+      choice = ''
       loop do
         puts "Please choose rock, paper, or scissors"
         choice = gets.chomp
@@ -69,7 +70,27 @@ class RPSGame
   end
 
   def display_goodbye_message
-    puts "Thanks fo playing Rock, Paper, Scissors"
+    puts "Thanks for playing Rock, Paper, Scissors"
+  end
+
+  def display_winner
+    puts "You chose #{human.move}."
+    puts "Computer chose #{computer.move}."
+
+    case human.move
+    when 'rock'
+      puts "It's a tie!" if computer.move == 'rock'
+      puts "You won!" if computer.move == 'scissors'
+      puts "Computer Won!" if computer.move == 'paper'
+    when 'paper'
+      puts "It's a tie!" if computer.move == 'paper'
+      puts "You won!" if computer.move == 'rock'
+      puts "Computer Won!" if computer.move == 'scissors'
+    when 'scissors'
+      puts "It's a tie!" if computer.move == 'scissors'
+      puts "You won!" if computer.move == 'paper'
+      puts "Computer Won!" if computer.move == 'rock'
+    end
   end
 
   def play
