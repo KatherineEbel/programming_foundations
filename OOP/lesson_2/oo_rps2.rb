@@ -66,11 +66,41 @@ class Spock < Move
   end
 end
 
+class History
+  attr_accessor :moves
+  def initialize
+    @moves = []
+  end
+
+  def update(move1, move2)
+    if move1.beats? move2
+      add_win_for move1.value
+    elsif move2.beats? move1
+      add_loss_for move1.value
+    else
+      add_tie_for move1.value
+    end
+  end
+
+  def add_win_for(move)
+    moves << {move => 'win'}
+  end
+
+  def add_loss_for(move)
+    moves << {move => 'lose'}
+  end
+
+  def add_tie_for(move)
+    moves << {move => 'tie'}
+  end
+end
+
 class Player
-  attr_accessor :move, :name, :score
+  attr_accessor :move, :name, :score, :history
   def initialize
     set_name
     @score = 0
+    @history = History.new
   end
 
   def set_move(choice)
@@ -163,6 +193,11 @@ class RPSGame
     end
   end
 
+  def update_player_history(human, computer)
+    human.history.update(human.move, computer.move)
+    computer.history.update(computer.move, human.move)
+  end
+
   def display_winner
     if human_won?
       puts "#{human.name} won!"
@@ -205,11 +240,14 @@ class RPSGame
   def play
     display_welcome_message
     loop do
+      p human.history
+      p computer.history
       human.choose
       computer.choose
       display_moves
       display_winner
       display_scores
+      update_player_history(human, computer)
       if game_over?
         play_again? ? reset_scores : break
       end
