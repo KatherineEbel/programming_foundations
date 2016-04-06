@@ -14,6 +14,43 @@
 # Scissors  - cuts Paper, decapitates Lizard
 # Lizard    - poisons Spock, eats Paper
 # Spock     - smashes scissors, vaporizes Rock
+require 'pry'
+
+
+class Move
+  attr_reader :value, :beats
+  VALUES = ['rock', 'paper', 'scissors'].freeze
+  def initialize(value)
+    @value = value
+    @beats = []
+  end
+
+  def beats?(opponent)
+    opponent = opponent.value
+    beats.include? opponent
+  end
+end
+
+class Rock < Move
+  def initialize(value)
+    super
+    @beats = ['scissors']
+  end
+end
+
+class Paper < Move
+  def initialize(value)
+    @value = value
+    @beats = ['rock']
+  end
+end
+
+class Scissors < Move
+  def initialize(value)
+    super
+    @beats = ['paper']
+  end
+end
 
 class Player
   attr_accessor :move, :name, :score
@@ -22,9 +59,13 @@ class Player
     @score = 0
   end
 
-  # def set_name
-  #   self.name = name
-  # end
+  def set_move(choice)
+    self.move = case choice
+    when 'rock' then Rock.new(choice)
+    when 'paper' then Paper.new(choice)
+    when 'scissors' then Scissors.new(choice)
+    end
+  end
 end
 
 class Human < Player
@@ -46,7 +87,7 @@ class Human < Player
       break if Move::VALUES.include? choice
       puts "Sorry, invalid choice."
     end
-    self.move = Move.new choice
+    self.set_move choice
   end
 end
 
@@ -56,47 +97,7 @@ class Computer < Player
   end
 
   def choose
-    self.move = Move.new Move::VALUES.sample
-  end
-end
-
-class Move
-  attr_reader :value
-  VALUES = ['rock', 'paper', 'scissors'].freeze
-  def initialize(value)
-    @value = value
-  end
-
-  def to_s
-    value
-  end
-
-  def scissors?
-    @value == 'scissors'
-  end
-
-  def rock?
-    @value == 'rock'
-  end
-
-  def paper?
-    @value == 'paper'
-  end
-
-  def >(other_move)
-    case @value
-    when 'rock' then other_move.scissors?
-    when 'paper' then other_move.rock?
-    when 'scissors' then other_move.paper?
-    end
-  end
-
-  def <(other_move)
-    case @value
-    when 'rock' then other_move.paper?
-    when 'paper' then other_move.scissors?
-    when 'scissors' then other_move.rock?
-    end
+    self.set_move Move::VALUES.sample
   end
 end
 
@@ -128,28 +129,28 @@ class RPSGame
   end
 
   def display_moves
-    puts "#{human.name} chose #{human.move}."
-    puts "#{computer.name} chose #{computer.move}."
+    puts "#{human.name} chose #{human.move.value}."
+    puts "#{computer.name} chose #{computer.move.value}."
   end
 
-  def human_win?
-    if human.move > computer.move
+  def human_won?
+    if human.move.beats? computer.move
       human.score += 1
       return true
     end
   end
 
-  def computer_win?
-    if human.move < computer.move
+  def computer_won?
+    if computer.move.beats? human.move
       computer.score += 1
       return true
     end
   end
 
   def display_winner
-    if human_win?
+    if human_won?
       puts "#{human.name} won!"
-    elsif computer_win?
+    elsif computer_won?
       puts "#{computer.name} won!"
     else
       puts "It's a Tie!"
