@@ -19,7 +19,7 @@ require 'pry'
 
 class Move
   attr_reader :value, :beats
-  VALUES = ['rock', 'paper', 'scissors'].freeze
+  VALUES = ['rock', 'paper', 'scissors', 'lizard', 'spock'].freeze
   def initialize(value)
     @value = value
     @beats = []
@@ -34,21 +34,35 @@ end
 class Rock < Move
   def initialize(value)
     super
-    @beats = ['scissors']
+    @beats = ['scissors', 'lizard']
   end
 end
 
 class Paper < Move
   def initialize(value)
-    @value = value
-    @beats = ['rock']
+    super
+    @beats = ['rock', 'spock']
   end
 end
 
 class Scissors < Move
   def initialize(value)
     super
-    @beats = ['paper']
+    @beats = ['paper', 'lizard']
+  end
+end
+
+class Lizard < Move
+  def initialize(value)
+    super
+    @beats = ['spock', 'paper']
+  end
+end
+
+class Spock < Move
+  def initialize(value)
+    super
+    @beats = ['scissors', 'rock']
   end
 end
 
@@ -64,6 +78,8 @@ class Player
     when 'rock' then Rock.new(choice)
     when 'paper' then Paper.new(choice)
     when 'scissors' then Scissors.new(choice)
+    when 'lizard' then Lizard.new(choice)
+    when 'spock' then Spock.new(choice)
     end
   end
 end
@@ -82,7 +98,7 @@ class Human < Player
   def choose
     choice = nil
     loop do
-      puts "Please choose rock, paper, or scissors"
+      puts "Please choose rock, paper, or scissors, lizard, or spock"
       choice = gets.chomp
       break if Move::VALUES.include? choice
       puts "Sorry, invalid choice."
@@ -121,11 +137,11 @@ class RPSGame
   end
 
   def display_welcome_message
-    puts "Welcome to Rock, Paper, Scissors #{human.name}!"
+    puts "Welcome to Rock, Paper, Scissors, Lizard, Spock #{human.name}!"
   end
 
   def display_goodbye_message
-    puts "Thanks for playing Rock, Paper, Scissors #{human.name}! Good bye!"
+    puts "Thanks for playing Rock, Paper, Scissors, Lizard, Spock #{human.name}! Good bye!"
   end
 
   def display_moves
