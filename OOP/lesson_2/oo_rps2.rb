@@ -16,7 +16,6 @@
 # Spock     - smashes scissors, vaporizes Rock
 require 'pry'
 
-
 class Move
   attr_reader :value, :beats
   VALUES = ['rock', 'paper', 'scissors', 'lizard', 'spock'].freeze
@@ -83,15 +82,15 @@ class History
   end
 
   def add_win_for(move)
-    moves << {move => 'win'}
+    moves << { move => 'win' }
   end
 
   def add_loss_for(move)
-    moves << {move => 'lose'}
+    moves << { move => 'lose' }
   end
 
   def add_tie_for(move)
-    moves << {move => 'tie'}
+    moves << { move => 'tie' }
   end
 end
 
@@ -103,41 +102,14 @@ class Player
     @history = History.new
   end
 
-  def num_moves
-    history.moves.size.to_f
-  end
-
-  def set_move(choice)
+  def pick_move(choice)
     self.move = case choice
-    when 'rock' then Rock.new(choice)
-    when 'paper' then Paper.new(choice)
-    when 'scissors' then Scissors.new(choice)
-    when 'lizard' then Lizard.new(choice)
-    when 'spock' then Spock.new(choice)
-    end
-  end
-
-  def percent_losses(choice)
-    losses = history.moves.select {|value| value[choice] == 'lose'}
-    if losses.size > 0
-      percent = losses.size.to_f / num_moves * 100
-      p percent
-      return percent
-    else
-      return 0
-    end
-  end
-
-  # if random selected move has lost more than 60%, then choose from hx of winning moves
-  def eval(choice)
-    if percent_losses(choice) > 60
-      winning_moves = history.moves.select { |value| value[choice] == 'win' }
-      if winning_moves.size > 0
-        self.set_move winning_moves.sample
-      end
-    else
-      self.set_move choice
-    end
+                when 'rock' then Rock.new(choice)
+                when 'paper' then Paper.new(choice)
+                when 'scissors' then Scissors.new(choice)
+                when 'lizard' then Lizard.new(choice)
+                when 'spock' then Spock.new(choice)
+                end
   end
 end
 
@@ -160,17 +132,31 @@ class Human < Player
       break if Move::VALUES.include? choice
       puts "Sorry, invalid choice."
     end
-    self.set_move choice
+    pick_move choice
   end
 end
 
+# preferences is a hash of move values for keys and an integer weighted value.
 class Computer < Player
+  attr_reader :preferences
+  def initialize
+    super
+    @preferences = {}
+  end
+
   def set_name
     self.name = ['R2D2', 'Hal', 'Chappie', 'Sonny', 'Number 5'].sample
   end
 
   def choose
-    self.eval Move::VALUES.sample
+    sum = preferences.inject(0) do |total, item_and_weight|
+      total + item_and_weight[1]
+    end
+    target = rand(sum)
+    preferences.each do |item, weight|
+      return pick_move(item) if target <= weight
+      target -= weight
+    end
   end
 end
 
@@ -178,6 +164,7 @@ class R2D2 < Computer
   def initialize
     super
     @name = 'R2D2'
+    @preferences = { 'rock' => 80, 'spock' => 10, 'lizard' => 10 }
   end
 end
 
@@ -185,6 +172,7 @@ class Hal < Computer
   def initialize
     super
     @name = 'Hal'
+    @preferences = { 'spock' => 50, 'scissors' => 25, 'paper' => 25 }
   end
 end
 
@@ -192,6 +180,9 @@ class Chappie < Computer
   def initialize
     super
     @name = 'Chappie'
+    @preferences = { 'rock' => 20, 'paper' => 20,
+                     'scissors' => 20, 'lizard' => 20,
+                     'spock' => 20 }
   end
 end
 
@@ -199,6 +190,7 @@ class Sonny < Computer
   def initialize
     super
     @name = 'Sonny'
+    @preferences = { 'paper' => 60, 'lizard' => 20, 'scissors' => 20 }
   end
 end
 
@@ -206,23 +198,14 @@ class Number5 < Computer
   def initialize
     super
     @name = 'Number 5'
+    @preferences = { 'spock' => 60, 'rock' => 20, 'scissors' => 20 }
   end
 end
 
-# class Rule
-#   def initialize
-#     # not sure what the "state" of a rule object should be
-#   end
-# end
-
-# not sure where "compare" goes yet
-# def compare(move1, move2)
-#
-# end
-
 class RPSGame
   MAX_SCORE = 10
-  OPPONENTS = {1 =>'R2D2', 2 => 'Hal', 3 => 'Chappie', 4 => 'Sonny', 5 =>'Number 5', 6 => 'Random'}
+  OPPONENTS = { 1 => 'R2D2', 2 => 'Hal', 3 => 'Chappie',
+                4 => 'Sonny', 5 => 'Number 5' }.freeze
   attr_accessor :human, :computer
   def initialize
     @human = Human.new
@@ -250,14 +233,14 @@ class RPSGame
     answer = nil
     loop do
       answer = gets.chomp.to_i
-      break if RPSGame::OPPONENTS.has_key? answer
+      break if RPSGame::OPPONENTS.key? answer
       puts "Please choose (1-5)"
     end
     answer = RPSGame::OPPONENTS[answer]
-    set_opponent(answer)
+    opponent_for(answer)
   end
 
-  def set_opponent(selection)
+  def opponent_for(selection)
     case selection
     when 'R2D2' then self.computer = R2D2.new
     when 'Hal' then self.computer = Hal.new
@@ -317,7 +300,7 @@ class RPSGame
 
   def game_over?
     if human.score == RPSGame::MAX_SCORE ||
-      computer.score == RPSGame::MAX_SCORE
+       computer.score == RPSGame::MAX_SCORE
       puts "Game Over!"
       return true
     end
@@ -334,16 +317,20 @@ class RPSGame
     answer == 'y' ? true : false
   end
 
-  def play
+  def play_round
+    human.choose
+    computer.choose
+    display_moves
+    display_winner
+    display_scores
+    update_player_history(human, computer)
+  end
+
+  def play_game
     display_welcome_message
     select_opponent
     loop do
-      human.choose
-      computer.choose
-      display_moves
-      display_winner
-      display_scores
-      update_player_history(human, computer)
+      play_round
       if game_over?
         play_again? ? reset_scores : break
       end
@@ -352,4 +339,4 @@ class RPSGame
   end
 end
 
-RPSGame.new.play
+RPSGame.new.play_game
