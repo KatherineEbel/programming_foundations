@@ -103,6 +103,10 @@ class Player
     @history = History.new
   end
 
+  def num_moves
+    history.moves.size.to_f
+  end
+
   def set_move(choice)
     self.move = case choice
     when 'rock' then Rock.new(choice)
@@ -110,6 +114,29 @@ class Player
     when 'scissors' then Scissors.new(choice)
     when 'lizard' then Lizard.new(choice)
     when 'spock' then Spock.new(choice)
+    end
+  end
+
+  def percent_losses(choice)
+    losses = history.moves.select {|value| value[choice] == 'lose'}
+    if losses.size > 0
+      percent = losses.size.to_f / num_moves * 100
+      p percent
+      return percent
+    else
+      return 0
+    end
+  end
+
+  # if random selected move has lost more than 60%, then choose from hx of winning moves
+  def eval(choice)
+    if percent_losses(choice) > 60
+      winning_moves = history.moves.select { |value| value[choice] == 'win' }
+      if winning_moves.size > 0
+        self.set_move winning_moves.sample
+      end
+    else
+      self.set_move choice
     end
   end
 end
@@ -143,7 +170,7 @@ class Computer < Player
   end
 
   def choose
-    self.set_move Move::VALUES.sample
+    self.eval Move::VALUES.sample
   end
 end
 
@@ -240,8 +267,6 @@ class RPSGame
   def play
     display_welcome_message
     loop do
-      p human.history
-      p computer.history
       human.choose
       computer.choose
       display_moves
