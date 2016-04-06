@@ -6,11 +6,20 @@
 # what is the primary improvement and drawback of this new design?
 # Extracting all the move comparison logic to it's own class simplifies the game class, and makes the game more flexible.
 
+# Scissors cuts Paper covers Rock, crushes Lizard, poisons Spock,
+# smashes Scissors, decapitates Lizard, eats Paper, disproves Spock,
+# vaporizes Rock, crushes Scissors
+# Rock      - crushes Lizard, crushes Scissors
+# Paper     - covers Rock, disproves Spock
+# Scissors  - cuts Paper, decapitates Lizard
+# Lizard    - poisons Spock, eats Paper
+# Spock     - smashes scissors, vaporizes Rock
+
 class Player
-  attr_accessor :move, :name
+  attr_accessor :move, :name, :score
   def initialize
     set_name
-    # maybe a "name"? what about a "move"?
+    @score = 0
   end
 
   # def set_name
@@ -23,7 +32,7 @@ class Human < Player
     n = nil
     loop do
       puts "What's your name?"
-      n = gets.chomp
+      n = gets.chomp.capitalize
       break unless n.empty?
     end
     self.name = n
@@ -103,6 +112,7 @@ end
 # end
 
 class RPSGame
+  MAX_SCORE = 10
   attr_accessor :human, :computer
   def initialize
     @human = Human.new
@@ -122,13 +132,45 @@ class RPSGame
     puts "#{computer.name} chose #{computer.move}."
   end
 
-  def display_winner
+  def human_win?
     if human.move > computer.move
+      human.score += 1
+      return true
+    end
+  end
+
+  def computer_win?
+    if human.move < computer.move
+      computer.score += 1
+      return true
+    end
+  end
+
+  def display_winner
+    if human_win?
       puts "#{human.name} won!"
-    elsif human.move < computer.move
+    elsif computer_win?
       puts "#{computer.name} won!"
     else
       puts "It's a Tie!"
+    end
+  end
+
+  def display_scores
+    puts "#{human.name}'s score is #{human.score}"
+    puts "#{computer.name}'s score is #{computer.score}"
+  end
+
+  def reset_scores
+    human.score = 0
+    computer.score = 0
+  end
+
+  def game_over?
+    if human.score == RPSGame::MAX_SCORE ||
+      computer.score == RPSGame::MAX_SCORE
+      puts "Game Over!"
+      return true
     end
   end
 
@@ -150,7 +192,10 @@ class RPSGame
       computer.choose
       display_moves
       display_winner
-      break unless play_again?
+      display_scores
+      if game_over?
+        play_again? ? reset_scores : break
+      end
     end
     display_goodbye_message
   end
