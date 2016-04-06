@@ -174,6 +174,41 @@ class Computer < Player
   end
 end
 
+class R2D2 < Computer
+  def initialize
+    super
+    @name = 'R2D2'
+  end
+end
+
+class Hal < Computer
+  def initialize
+    super
+    @name = 'Hal'
+  end
+end
+
+class Chappie < Computer
+  def initialize
+    super
+    @name = 'Chappie'
+  end
+end
+
+class Sonny < Computer
+  def initialize
+    super
+    @name = 'Sonny'
+  end
+end
+
+class Number5 < Computer
+  def initialize
+    super
+    @name = 'Number 5'
+  end
+end
+
 # class Rule
 #   def initialize
 #     # not sure what the "state" of a rule object should be
@@ -187,6 +222,7 @@ end
 
 class RPSGame
   MAX_SCORE = 10
+  OPPONENTS = {1 =>'R2D2', 2 => 'Hal', 3 => 'Chappie', 4 => 'Sonny', 5 =>'Number 5', 6 => 'Random'}
   attr_accessor :human, :computer
   def initialize
     @human = Human.new
@@ -195,6 +231,40 @@ class RPSGame
 
   def display_welcome_message
     puts "Welcome to Rock, Paper, Scissors, Lizard, Spock #{human.name}!"
+  end
+
+  def display_opponents
+    puts "Who would you like to compete against? (1-5)"
+    choices = <<-CHOICES
+      1. R2D2
+      2. Hal
+      3. Chappie
+      4. Sonny
+      5. Number 5
+    CHOICES
+    puts choices
+  end
+
+  def select_opponent
+    display_opponents
+    answer = nil
+    loop do
+      answer = gets.chomp.to_i
+      break if RPSGame::OPPONENTS.has_key? answer
+      puts "Please choose (1-5)"
+    end
+    answer = RPSGame::OPPONENTS[answer]
+    set_opponent(answer)
+  end
+
+  def set_opponent(selection)
+    case selection
+    when 'R2D2' then self.computer = R2D2.new
+    when 'Hal' then self.computer = Hal.new
+    when 'Chappie' then self.computer = Chappie.new
+    when 'Sonny' then self.computer = Sonny.new
+    when 'Number 5' then self.computer = Number5.new
+    end
   end
 
   def display_goodbye_message
@@ -266,6 +336,7 @@ class RPSGame
 
   def play
     display_welcome_message
+    select_opponent
     loop do
       human.choose
       computer.choose
