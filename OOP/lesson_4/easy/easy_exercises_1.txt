@@ -1,0 +1,97 @@
+Question 1 Which of the following are objects in Ruby? If they are objects, how can you find out what class they belong to?
+
+answer: 1. true is an object of the TrueClass
+        2. "hello" is an object of the String class
+        3. [1,2,3, 'happy days'] is an object of Array class
+        4. 142 is an object of Fixnum class
+        class can be found by .class method on the object (i.e. "hello".class)
+
+Question 2 If we have a Car class and a Truck class and we want to be able to go_fast, how can we add the ability for them to go_fast using the module Speed. How can you check if your Car or Truck can now go fast?
+
+answer: include Speed in each class. Can use is_a? Speed called on a Car or Truck object. Alternative to check if go_fast method is available is to invoke it on an object of Car or Truck
+
+Question 3 When we called the go_fast method from an instance of the Car class (as shown below) you might have noticed that the string printed when we go fast includes the name of the type of vehicle we are using. How is this done?
+
+answer: This is because the way that go_fast was defined. It is implemented to output self.class, and when this is called, it will be referring to the class of the object that called the method that implements it.
+We don't need to use to_s because it is inside of a string and is interpolated.
+
+Question 4 If we have a class AngryCat how do we create a new instance of this class?
+
+class AngryCat
+  def hiss
+    puts "Hissss!!!"
+  end
+end
+
+answer: cat = AngryCat.new calling the .new method on the name of the class will create a new instance of AngryCat.
+
+
+Question 5 Which of these two classes has an instance variable and how do you know?
+
+class Fruit
+  def initialize(name)
+    name = name
+  end
+end
+
+class Pizza
+  def initialize(name)
+    @name = name
+  end
+end
+
+answer: Pizza has an instance variable, because an instance variable is designated with the @ character. We can also call the .instance_variable method on an instance of the class to see what instance_variables are defined. (It returns an array)
+
+Question 6 What could we add to the class below to access the instance variable @volume?
+
+class Cube
+  def initialize(volume)
+    @volume = volume
+  end
+end
+
+answer: we could define setter or getter methods for the @volume instance variable, or we could define attr_writer,reader or accessor depending on how we need to work with the instance variable.
+
+can also call .instance_variable_get "@volume" on an instance of Cube
+
+Question 7 What is the default thing that Ruby will print to the screen if you call to_s on an object? Where could you go to find out if you want to be sure?
+
+answer: It depends on how method is defined for particular object. For basic objects it will print out the string representation of the object_id, and class name
+You can go to the to_s documentation for the class you are working with.
+By default if you call to_s you will be telling Ruby to print the object’s class and an encoding of the object id to the console.
+
+
+Question 8 You can see in the make_one_year_older method we have used self. What does self refer to here?
+answer: In this instance it refers to the instance of Cat that calls the instance method make_one_year_older. self.age refers to the age instance variable.
+
+Question 9 If we have a class such as the one below:
+
+class Cat
+  @@cats_count = 0
+
+  def initialize(type)
+    @type = type
+    @age  = 0
+    @@cats_count += 1
+  end
+
+  def self.cats_count
+    @@cats_count
+  end
+end
+
+In the name of the cats_count method we have used self. What does self refer to in this context?
+
+answer: self refers to the Cat class. adding self to a class definition makes it a class method and doesn't require an instance of the class to call it. It will affect all objects of the cat class. self.cats_count is accessing the @@cats_count class variable.
+
+Question 10 If we have the class below, what would you need to call to create a new instance of this class.
+
+class Bag
+  def initialize(color, material)
+    @color = color
+    @material = material
+  end
+end
+
+answer: You would need to call the .new method with two parameters as defined by the initialize method. color and material.
+Bag.new('black', 'leather')
