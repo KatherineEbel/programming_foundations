@@ -1,0 +1,9 @@
+Exercises: Hard 1
+Question 1
+answer: see exercises_1.rb
+
+Question 2
+answer: exercises_1.rb
+
+Question 3
+answer: Override the range method in the Catamaran class, so that it's version will be used in all Catamaran objects. you can return super + 10
