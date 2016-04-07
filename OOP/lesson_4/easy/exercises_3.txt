@@ -1,0 +1,44 @@
+Exercises: Easy 3
+
+Question 1
+
+answer:
+case 1: Hello will be displayed to the screen. Hello inherits the greet method from it's superclass greeting, and implements it's own hi method which calls the greet method and passes it the string "Hello"
+
+case 2: A no method error will be thrown because Ruby will look for a bye method in the Hello class's lookup chain, and will not find one in it's own class or it's Greeting superclasss.
+
+case 3: Will throw an error for missing arguments. The greet method expects one parameter, and one was not given.
+
+case 4: "Goodbye" will be output. Ruby will look in Hello's class for a greet method, and won't find it, so it will check it's superclass Greeting for a greet method, and it will use the one it finds there.
+
+case 5: undefined method error. No class method hi has been defined.
+
+Question 2
+
+answer: instead of calling the hi method on the class, create an instance of helllo, and call the hi method on it.
+
+Question 3 Given the class below, how do we create two different instances of this class, both with separate names and ages?
+
+answer: initializing a new cat requires us to pass in two parameters. When the object is initialized these parameters will be assigned to the instance variables they are associated with in the class.
+
+cat1 = AngryCat.new(1, 'Boots')
+cat2 = AngryCat.new(3, 'Mittens')
+
+Question 4 Given the class below, if we created a new instance of the class and then called to_s on that instance we would get something like "#<Cat:0x007ff39b356d30>"
+
+answer: override the default to_s method to return the @type instance variable
+
+Question 5
+
+answer: tv.manufacturer would throw an error because it is a class method, so you can't call it on an instance of the class. tv.model would call the model method on the instance tv of the Television class.
+
+Television .manufacturer would call the class method manufacturer on the TV class.
+Television.model would throw an error because model is an instance method and not a class method.
+
+Question 6
+
+answer: since there is an attr_accessor you could replace self with @
+
+Question 7
+
+answer: the return statement is not necessary in the information class method. Also there is an attr_accessor, but it was never used in any of the methods.

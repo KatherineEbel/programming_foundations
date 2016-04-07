@@ -1,0 +1,134 @@
+# Exercises: Easy 2
+# Question 1
+class Oracle
+  def predict_the_future
+    "You will " + choices.sample
+  end
+
+  def choices
+    ["eat a nice lunch", "take a nap soon", "stay at work late"]
+  end
+end
+
+# What is the result of calling:
+oracle = Oracle.new
+oracle.predict_the_future
+
+answer: a random value from the choices array will be returned from the choices instance method.
+
+Question 2 We have an Oracle class and a RoadTrip class that inherits from the Oracle class.
+
+class Oracle
+  def predict_the_future
+    "You will " + choices.sample
+  end
+
+  def choices
+    ["eat a nice lunch", "take a nap soon", "stay at work late"]
+  end
+end
+
+class RoadTrip < Oracle
+  def choices
+    ["visit Vegas", "fly to Fiji", "romp in Rome"]
+  end
+end
+
+what is the result of the following:
+
+trip = RoadTrip.new
+trip.predict_the_future
+
+answer: since RoadTrip is a subclass of Oracle, it will inherit the predict_the_future method, but since it overrides the choices method a different array will be used to return a random value from the choices method. (one of ["visit Vegas", "fly to Fiji", "romp in Rome"
+
+Question 3 How do you find where Ruby will look for a method when that method is called? How can you find an object's ancestors?
+module Taste
+  def flavor(flavor)
+    puts "#{flavor}"
+  end
+end
+
+class Orange
+  include Taste
+end
+
+class HotSauce
+  include Taste
+end
+
+answer: call .ancestors method on the class itself (Orange.ancestors)
+  Orange is Orange, Taste, Object, Kernel, Basic Object
+  HotSauce is HotSauce, Taste, Object, Kernel, Basic Object
+
+Question 4 What could you add to this class to simplify it and remove two methods from the class definition while still maintaining the same functionality?
+
+answer: add an attr_accessor for the @type instance variable. It creates basic getter and setter methods for you.
+Also in the describe type method we can refer to the @type instance variable directly with type. We don't need the @ when a attr_accessor is defined.
+
+Question 5
+1. excited_dog = "excited dog"
+2. @excited_dog = "excited dog"
+3. @@excited_dog = "excited dog"
+
+answer: 1. is a local variable because there is no reserved special character in front of the variable name.
+        2. is a instance variable and we can tell by the single @ in front of the variable name.
+        3. is a class variable and we can tell by the two @ in front of the variable name.
+
+
+Question 6 If we have the following class:
+
+class Television
+  def self.manufacturer
+    # method logic
+  end
+
+  def model
+    # method logic
+  end
+end
+
+Which one of these is a class method (if any) and how do you know? How would you call a class method?
+
+answer: if a method is defined inside a class and it is prepended with self., then it is a class method. self.manufacturer would be a class method. You would call a class method on the class itself. In this example, Television.manufacturer
+
+Question 7 If we have a class such as the one below:
+
+class Cat
+  @@cats_count = 0
+
+  def initialize(type)
+    @type = type
+    @age  = 0
+    @@cats_count += 1
+  end
+
+  def self.cats_count
+    @@cats_count
+  end
+end
+
+Explain what the @@cats_count variable does and how it works. What code would you need to write to test your theory?
+
+answer: @@cats_count is a class variable which is initialized to 0. What will happen, is that every time a new Cat instance is created the @@cats_count instance variable will be incremented by one, since that is how the initialize method is defined. To see what the current cats_count is we can call the class method cats_count on the Cat class. Before any objects are created the value will be 0, and that value will increase each time a new Cat object is created. example...
+
+puts Cat.cats_count
+fuzzy = Cat.new 'Tabby'
+puts Cat.cats_count
+mittens = Cat.new 'Black and White'
+puts Cat.cats_count
+
+Question 8 What can we add to the Bingo class to allow it to inherit the play method from the Game class?
+
+answer: We can make it a subclass of Game  change class definition to class Bingo < Game
+
+Question 9 What would happen if we added a play method to the Bingo class, keeping in mind that there is already a method of this name in the Game class that the Bingo class inherits from.
+
+answer: the Bingo class would override it's superclass Game's implementation of play with it's own.
+
+Question 10 What are the benefits of using Object Oriented Ruby.
+
+answer:
+1. easier to keep track of the state of your objects.
+2. If you already have a class defined, but want to add behavior, object oriented code allows you to create that new behavior with less work. You can simply add new behavior to an existing class.
+3. Object oriented code helps you organize code in logical chunks so it is easier to debug.
+4. It helps us to relate the code to real world objects.
