@@ -1,0 +1,20 @@
+Question 1
+answer: Ben is right. There is an attr_reader, so the @ or self are not needed when referring to the instance variable.
+
+Question 2
+answer: there is an attr_reader, which doesn't allow access for changing value of instance variables. We would need to change it to an attr_accessor for the code to work. or we could access the instance variable directly using @quantity.
+
+Question 3
+answer: This will work, however you are altering the way that users of the class are able to work with the class, as they can change the quantity directly instead of being required to work with the methods that are already exposed by the class, which could cause problems later.
+
+Question 4
+answer: exercises_1.rb
+
+Question 5
+answer: exercises_1.rb
+
+Question 6
+answer: both classes work the same way because self and @ basically are interchangeable. Self is not required and not recommended to use unless necessary.
+
+Question 7
+answer: self.info, since when we call it we will be calling it on the light class it will be obvious what it is doing. ( Light.info )
