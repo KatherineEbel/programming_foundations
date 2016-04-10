@@ -14,7 +14,6 @@
 # Scissors  - cuts Paper, decapitates Lizard
 # Lizard    - poisons Spock, eats Paper
 # Spock     - smashes scissors, vaporizes Rock
-require 'pry'
 
 class Move
   attr_reader :value, :beats
@@ -314,7 +313,7 @@ class RPSGame
       break if ['y', 'n'].include? answer.downcase
       puts "Sorry, must be y or n"
     end
-    answer == 'y' ? true : false
+    answer == 'y'
   end
 
   def play_round

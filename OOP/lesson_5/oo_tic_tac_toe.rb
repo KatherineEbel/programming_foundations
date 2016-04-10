@@ -141,10 +141,10 @@ class Score
 end
 
 class TicTacToePlayer
-  attr_reader :marker, :name
-  attr_accessor :score
-  def initialize(name, marker, board)
-    @name = name
+  attr_reader :marker
+  attr_accessor :score, :name
+  def initialize(marker, board)
+    set_name
     @board = board
     @marker = marker
     @score = Score.new
@@ -153,6 +153,16 @@ end
 
 class Human < TicTacToePlayer
   include Join
+  def set_name
+    n = nil
+    loop do
+      puts "What's your name?"
+      n = gets.chomp.capitalize
+      break unless n.empty?
+    end
+    @name = n
+  end
+
   def choose_square
     puts "Choose a square from #{joinor(@board.unmarked_keys)}: "
     square = nil
@@ -166,6 +176,9 @@ class Human < TicTacToePlayer
 end
 
 class Computer < TicTacToePlayer
+  def set_name
+    self.name = ['R2D2', 'Hal', 'Chappie', 'Sonny', 'Number 5'].sample
+  end
 
   def choose_square
     square = choose_strategy
@@ -203,8 +216,8 @@ class TTTGame
   attr_reader :board, :human, :computer
   def initialize
     @board = Board.new
-    @human = Human.new 'Kathy', HUMAN_MARKER, @board
-    @computer = Computer.new 'Sonny', COMPUTER_MARKER, @board
+    @human = Human.new HUMAN_MARKER, @board
+    @computer = Computer.new COMPUTER_MARKER, @board
     @current_marker = FIRST_TO_MOVE
   end
 
@@ -236,6 +249,14 @@ class TTTGame
   end
 
   private
+
+  def get_player_name
+
+  end
+
+  def get_computer_name
+
+  end
 
   def display_welcome_message
     puts "Welcome to Tic Tac Toe!" + "\n"
