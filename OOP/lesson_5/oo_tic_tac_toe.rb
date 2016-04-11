@@ -265,6 +265,11 @@ class TTTGame
     @current_marker = FIRST_TO_MOVE
   end
 
+  def start_game
+    display_welcome_message
+    clear
+  end
+
   def play_round
     loop do
       current_player_moves
@@ -274,8 +279,7 @@ class TTTGame
   end
 
   def play
-    display_welcome_message
-    clear
+    start_game
     loop do
       display_board
       play_round
@@ -291,7 +295,6 @@ class TTTGame
       reset
       display_play_again_message
     end
-
     display_goodbye_message
   end
 
