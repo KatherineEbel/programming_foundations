@@ -48,6 +48,10 @@ class Board
     @squares[key].marker = marker
   end
 
+  def [](key)
+    @squares[key]
+  end
+
   def unmarked_keys
     @squares.keys.select { |key| @squares[key].unmarked? }
   end
@@ -79,15 +83,17 @@ class Board
     (1..9).each { |key| @squares[key] = Square.new }
   end
 
-  def two_identical_markers?
+  def winning_key_for(line)
+    line.select { |key| @squares[key].unmarked? }.first
+  end
+
+  def line_with_two_identical_markers?(marker)
     WINNING_LINES.each do |line|
-        next unless @squares.values_at(*line).count(&:marked?) == 2
-        markers = @squares.values_at(*line).collect(&:marker)
-        if markers.uniq.size == 2
-          square = line.select { |value| @squares[value].unmarked? }
-          # returns corresponding square number on board
-          return square.first
-        end
+      squares = @squares.values_at(*line)
+      if squares.count(&:unmarked?) == 1 &&
+         squares.count { |square| square.marker == marker } == 2
+        return line
+      end
     end
     nil
   end
@@ -109,6 +115,10 @@ class Square
     @marker = marker
   end
 
+  def ==(other_marker)
+    @marker == other_marker
+  end
+
   def to_s
     marker
   end
@@ -123,12 +133,13 @@ class Square
 end
 
 class Score
+  attr_reader :points
   def initialize
     @points = 0
   end
 
   def to_s
-    "#{@points}"
+    @points.to_s
   end
 
   def add_point
@@ -141,13 +152,18 @@ class Score
 end
 
 class TicTacToePlayer
+  @@marker_choices = %w(X O)
   attr_reader :marker
   attr_accessor :score, :name
-  def initialize(marker, board)
+  def initialize(board)
     set_name
+    set_marker
     @board = board
-    @marker = marker
     @score = Score.new
+  end
+
+  def self.marker_choices
+    @@marker_choices
   end
 end
 
@@ -163,12 +179,23 @@ class Human < TicTacToePlayer
     @name = n
   end
 
+  def set_marker
+    mark = nil
+    loop do
+      puts "Would you like to be X's or O's? (x/o)"
+      mark = gets.chomp.capitalize
+      break if TicTacToePlayer.marker_choices.include? mark
+      puts "Sorry available markers are x or o"
+    end
+    @marker = TicTacToePlayer.marker_choices.delete mark
+  end
+
   def choose_square
     puts "Choose a square from #{joinor(@board.unmarked_keys)}: "
     square = nil
     loop do
       square = gets.chomp.to_i
-      break if @board.unmarked_keys.include?(square)
+      break if @board.unmarked_keys.include? square
       puts "Sorry, that's not an available square"
     end
     @board[square] = marker
@@ -176,35 +203,52 @@ class Human < TicTacToePlayer
 end
 
 class Computer < TicTacToePlayer
+  def initialize(board, opponent)
+    set_name
+    set_marker
+    @board = board
+    @score = Score.new
+    @opponent = opponent
+  end
+
   def set_name
     self.name = ['R2D2', 'Hal', 'Chappie', 'Sonny', 'Number 5'].sample
   end
 
+  def set_marker
+    @marker = TicTacToePlayer.marker_choices.first
+  end
+
   def choose_square
-    square = choose_strategy
+    # priority offense, then defense, then midddle, then simply random available
+    square = choose_offense? ||
+             choose_defense? ||
+             choose_middle_square? ||
+             choose_random_square
     @board[square] = marker
   end
 
-  def choose_strategy
-    find_two_in_a_row? ||
-    choose_middle? ||
-    choose_random_square
+  def choose_offense?
+    line = @board.line_with_two_identical_markers?(marker)
+    if line
+      return @board.winning_key_for(line)
+    end
   end
 
-  def find_two_in_a_row?
-    @board.two_identical_markers?
+  def choose_defense?
+    line = @board.line_with_two_identical_markers?(@opponent.marker)
+    if line
+      return @board.winning_key_for(line)
+    end
+  end
+
+  def choose_middle_square?
+    squares = @board.squares
+    return  squares.key(@board.middle_square) if @board.middle_square.unmarked?
   end
 
   def choose_random_square
-    # priority offense, then defense, then simply random available
     @board.unmarked_keys.sample
-  end
-
-  # AI for computer selections
-
-  def choose_middle?
-    middle_square = @board.unmarked_keys.select {|key| @board.squares[key] == @board.middle_square }.first
-    return middle_square ? middle_square : nil
   end
 end
 
@@ -216,9 +260,17 @@ class TTTGame
   attr_reader :board, :human, :computer
   def initialize
     @board = Board.new
-    @human = Human.new HUMAN_MARKER, @board
-    @computer = Computer.new COMPUTER_MARKER, @board
+    @human = Human.new @board
+    @computer = Computer.new @board, @human
     @current_marker = FIRST_TO_MOVE
+  end
+
+  def play_round
+    loop do
+      current_player_moves
+      break if board.someone_won? || board.full?
+      clear_screen_and_display_board if human_turn?
+    end
   end
 
   def play
@@ -226,37 +278,24 @@ class TTTGame
     clear
     loop do
       display_board
-      loop do
-        current_player_moves
-        break if board.someone_won? || board.full?
-        clear_screen_and_display_board if human_turn?
-      end
+      play_round
       update_scores
       display_result
       if game_over?
         reset_scores
         break unless play_again?
-          reset
-          display_play_again_message
-      else
-        break unless play_again?
         reset
         display_play_again_message
       end
+      break unless play_again?
+      reset
+      display_play_again_message
     end
 
     display_goodbye_message
   end
 
   private
-
-  def get_player_name
-
-  end
-
-  def get_computer_name
-
-  end
 
   def display_welcome_message
     puts "Welcome to Tic Tac Toe!" + "\n"
@@ -301,7 +340,7 @@ class TTTGame
   end
 
   def game_over?
-    @human.score == WINNING_SCORE || @computer.score == WINNING_SCORE
+    @human.score.points == WINNING_SCORE || @computer.score.points == WINNING_SCORE
   end
 
   def current_player_moves
