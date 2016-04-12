@@ -1,75 +1,102 @@
 require 'pry'
 
-class Player
-  attr_accessor :hand
+module Displayable
+  def joinor(arr, delimiter=', ', word='or')
+    arr[-1] = "#{word} #{arr.last}" if arr.size > 1
+    arr.join(delimiter)
+  end
+
+  def display(message)
+    puts message
+  end
+end
+
+module TwentyOneHand
+  include Displayable
+  STAY = 17
+  TWENTY_ONE = 21
+  attr_reader :cards, :total
   def initialize
-    @hand = []
-    # what would the "data" or "states" of  a Player object entail?
-      #- maybe cards? a name?
+    @cards = []
   end
 
-  def show_hand
-    hand = "Player hand is: "
-    @hand.each { |card| hand << "#{card.name}, "}
-    hand
+  def hit(deck)
+    cards << deck.deal_card
   end
 
-  def hit
-
-  end
-
-  def stay
-
+  def stay?
+    total >= STAY
   end
 
   def busted?
-
+    total > TWENTY_ONE
   end
 
   def total
-    # definitely looks llike we need to know about "cards" to produce some total
+    sum = 0
+    cards.each do |card|
+      sum += card.value
+      if card.is_ace? && sum > TWENTY_ONE
+        sum -= 10
+      end
+    end
+    sum
+  end
+
+  def show_cards
+    cards = @cards.map { |card| card.name }
+    joinor(cards, ', ', 'and')
+  end
+
+  def discard
+    @cards = []
+  end
+
+end
+
+class Card
+  attr_reader :name
+  def initialize(suit, name)
+    # what are the 'states' of a card?
+    @suit = suit
+    @name = name
+    @value
+  end
+
+  def to_s
+    name
+  end
+
+  def is_ace?
+    name == 'A'
+  end
+
+  def value
+    case name
+    when (2..10) then name
+    when 'J', 'Q', 'K' then 10
+    when 'A' then 11
+    end
+  end
+end
+
+class Player
+  include TwentyOneHand
+
+  def show_cards
+    super.prepend "Player has: "
   end
 end
 
 class Dealer
-  attr_accessor :hand
-  def initialize
-    @hand = []
-    # seems like very similar to Player... do we even need this?
+  include TwentyOneHand
+
+  def first_card
+    "Dealer shows #{@cards.first.name}"
   end
 
-  def show_hand
-    "Dealer shows #{@hand.first.name}"
-  end
-
-  def hit
-
-  end
-
-  def stay
-
-  end
-
-  def busted?
-
-  end
-
-  def total
-
-  end
-end
-
-class Participant
-  # what goes in here? all the redundant behaviors from Player and Dealer?
-end
-
-module Hand
-  def busted?
-
-  end
-
-  def total
-
+  def show_cards
+    super.prepend "Dealer has: "
   end
 end
 
@@ -98,57 +125,126 @@ class Deck
   end
 end
 
-class Card
-  attr_reader :name
-  def initialize(suit, name)
-    # what are the 'states' of a card?
-    @suit = suit
-    @name = name
-    @value
-  end
-
-  def to_s
-    name
-  end
-end
-
 class TwentyOneGame
+  include Displayable
   def initialize
-    @deck = Deck.new
     @dealer = Dealer.new
     @player = Player.new
   end
 
-  def display_welcome_message
-    welcome_message = <<-MSG
+  def start
+    display welcome_message
+    loop do
+      discard_hands
+      @deck = Deck.new
+      # what's the sequence of steps to execute the game play?
+      play_round
+      display result
+      break unless play_again?
+    end
+    display goodbye_message
+  end
+
+  private
+
+  def welcome_message
+    <<-MSG
       Welcome to the game of 21!
       Beat the dealer to 5 points to win!
       One point for every round you win.
     MSG
-    puts welcome_message
+  end
+
+  def play_round
+    loop do
+      deal_hands
+      display initial_hands
+      player_turn
+      break if @player.busted?
+      dealer_turn
+      break
+    end
   end
 
   def deal_hands
     2.times do
-      @player.hand << @deck.deal_card
-      @dealer.hand << @deck.deal_card
+      @player.hit(@deck)
+      @dealer.hit(@deck)
     end
   end
 
-  def show_initial_hands
-    binding.pry
-    puts @dealer.show_hand
-    puts @player.show_hand
+  def initial_hands
+    "#{@dealer.first_card}" + "\n" + "#{@player.show_cards}"
   end
 
-  def start
-    display_welcome_message
-    # what's the sequence of steps to execute the game play?
-    deal_hands
-    show_initial_hands
-    # player_turn
-    # dealer_turn
-    # show_result
+  def player_turn
+    answer = nil
+    loop do
+      break if @player.busted?
+      puts "Would you like to hit or stay? (h/s)"
+      answer = gets.chomp.downcase
+      break unless answer.downcase.start_with? 'h'
+      @player.hit(@deck)
+      display @player.show_cards
+    end
+  end
+
+  def dealer_turn
+    loop do
+      break if @dealer.stay? || @dealer.busted?
+      @dealer.hit(@deck)
+    end
+  end
+
+  def show_busted_participant
+    @player.busted? ? "You busted!" : nil
+    @dealer.busted? ? "Dealer busted!" : nil
+  end
+
+  def player_win?
+    return false if @player.busted?
+    @dealer.busted? || @player.total > @dealer.total
+  end
+
+  def dealer_win?
+    return true if @player.busted?
+    @dealer.total > @player.total
+  end
+
+  def final_result
+    if player_win? then "You won!"
+    elsif dealer_win? then "Dealer won!"
+    else "It's a tie!"
+    end
+  end
+
+  def result
+    display "#{show_busted_participant} #{final_result}"
+    display final_hands
+  end
+
+  def final_hands
+    "#{@player.show_cards}" + "\n" + "#{@dealer.show_cards}"
+  end
+
+  def play_again?
+    answer = nil
+    loop do
+      display "Would you like to play again? (y/n)"
+      answer = gets.chomp.downcase
+      break if %w(y n).include? answer
+      display "Sorry, please choose (y/n)"
+    end
+    answer == 'y'
+  end
+
+  def discard_hands
+    @player.discard
+    @dealer.discard
+  end
+
+  def goodbye_message
+    "Thanks for playing Twenty-one! Goodbye!"
   end
 end
 
