@@ -1,5 +1,9 @@
+require 'pry'
+
 class Player
+  attr_accessor :hand
   def initialize
+    @hand = []
     # what would the "data" or "states" of  a Player object entail?
       #- maybe cards? a name?
   end
@@ -22,7 +26,9 @@ class Player
 end
 
 class Dealer
+  attr_accessor :hand
   def initialize
+    @hand = []
     # seems like very similar to Player... do we even need this?
   end
 
@@ -65,20 +71,42 @@ class Deck
   def initialize
     # obviously, we need some data structure to keep track of  cards
     # array, hash, something else?
+    @cards = { hearts: [], diamonds: [], clubs: [], spades: [] }
+    @face_cards = ['J', 'Q', 'K', 'A']
+    @number_cards = (2..10).to_a
+    new_deck
   end
 
-  def deal
-    # does the dealer or the deck deal
+  def new_deck
+    @cards.each_key do |suit|
+      @face_cards.each { |card| @cards[suit] += [Card.new(suit, card)] }
+      @number_cards.each { |card| @cards[suit] += [Card.new(suit, card)] }
+    end
+  end
+
+  def deal_card
+    cards = @cards.values
+    suit = cards[rand cards.size]
+    card = suit[rand suit.size]
+    suit.delete card
   end
 end
 
 class Card
-  def initialize
+  def initialize(suit, name)
     # what are the 'states' of a card?
+    @suit
+    @name
+    @value
   end
 end
 
 class TwentyOneGame
+  def initialize
+    @deck = Deck.new
+    @dealer = Dealer.new
+    @player = Player.new
+  end
 
   def display_welcome_message
     welcome_message = <<-MSG
@@ -89,15 +117,22 @@ class TwentyOneGame
     puts welcome_message
   end
 
+  def deal_hands
+    2.times do
+      @player.hand << @deck.deal_card
+      @dealer.hand << @deck.deal_card
+    end
+    binding.pry 
+  end
+
   def start
     display_welcome_message
-    break
     # what's the sequence of steps to execute the game play?
-    deal_cards
-    show_initial_cards
-    player_turn
-    dealer_turn
-    show_result
+    deal_hands
+    # show_initial_cards
+    # player_turn
+    # dealer_turn
+    # show_result
   end
 end
 
