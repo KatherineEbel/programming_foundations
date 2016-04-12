@@ -6,7 +6,7 @@ STAY = 17
 TWENTY_ONE = 21
 WIN = 5
 
-welcome_message = <<MSG
+welcome_message = <<-MSG
   Welcome to the game of 21!
   Beat the dealer to 5 points to win!
   One point for every round you win.

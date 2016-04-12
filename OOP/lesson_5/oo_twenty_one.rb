@@ -8,6 +8,12 @@ class Player
       #- maybe cards? a name?
   end
 
+  def show_hand
+    hand = "Player hand is: "
+    @hand.each { |card| hand << "#{card.name}, "}
+    hand
+  end
+
   def hit
 
   end
@@ -32,8 +38,8 @@ class Dealer
     # seems like very similar to Player... do we even need this?
   end
 
-  def deal
-    # does the dealer or the deck deal?
+  def show_hand
+    "Dealer shows #{@hand.first.name}"
   end
 
   def hit
@@ -93,11 +99,16 @@ class Deck
 end
 
 class Card
+  attr_reader :name
   def initialize(suit, name)
     # what are the 'states' of a card?
-    @suit
-    @name
+    @suit = suit
+    @name = name
     @value
+  end
+
+  def to_s
+    name
   end
 end
 
@@ -122,14 +133,19 @@ class TwentyOneGame
       @player.hand << @deck.deal_card
       @dealer.hand << @deck.deal_card
     end
-    binding.pry 
+  end
+
+  def show_initial_hands
+    binding.pry
+    puts @dealer.show_hand
+    puts @player.show_hand
   end
 
   def start
     display_welcome_message
     # what's the sequence of steps to execute the game play?
     deal_hands
-    # show_initial_cards
+    show_initial_hands
     # player_turn
     # dealer_turn
     # show_result
