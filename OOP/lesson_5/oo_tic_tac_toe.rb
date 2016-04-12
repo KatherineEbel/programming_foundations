@@ -84,7 +84,7 @@ class Board
   end
 
   def winning_key_for(line)
-    line.select { |key| @squares[key].unmarked? }.first
+    line.find { |key| @squares[key].unmarked? }
   end
 
   def line_with_two_identical_markers(marker)
