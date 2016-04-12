@@ -80,23 +80,40 @@ class Card
   end
 end
 
-class Player
+class Participant
   include TwentyOneHand
-
-  def show_cards
-    super.prepend "Player has: "
+  attr_reader :name
+  def initialize
+    set_name
   end
 end
 
-class Dealer
-  include TwentyOneHand
-
-  def first_card
-    "Dealer shows #{@cards.first.name}"
+class Player < Participant
+  def set_name
+    n = nil
+    loop do
+      puts "What's your name?"
+      n = gets.chomp.capitalize
+      break unless n.empty?
+    end
+    @name = n
   end
 
   def show_cards
-    super.prepend "Dealer has: "
+    super.prepend "#{name} has: "
+  end
+end
+
+class Dealer < Participant
+  def set_name
+    @name = ['R2D2', 'Hal', 'Chappie', 'Sonny', 'Number 5'].sample
+  end
+  def first_card
+    "#{name} shows #{@cards.first.name}"
+  end
+
+  def show_cards
+    super.prepend "#{name} has: "
   end
 end
 
