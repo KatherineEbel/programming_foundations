@@ -11,7 +11,7 @@
 # - mark
 # - play
 
-module Join
+module Displayable
   def joinor(arr, delimiter=', ', word='or')
     arr[-1] = "#{word} #{arr.last}" if arr.size > 1
     arr.join(delimiter)
@@ -87,7 +87,7 @@ class Board
     line.select { |key| @squares[key].unmarked? }.first
   end
 
-  def line_with_two_identical_markers?(marker)
+  def line_with_two_identical_markers(marker)
     WINNING_LINES.each do |line|
       squares = @squares.values_at(*line)
       if squares.count(&:unmarked?) == 1 &&
@@ -102,8 +102,7 @@ class Board
 
   def three_identical_markers?(squares)
     markers = squares.select(&:marked?).collect(&:marker)
-    return false if markers.size != 3
-    markers.min == markers.max
+    return false if markers.size != 3 && markers.min == markers.max
   end
 end
 
@@ -155,10 +154,9 @@ class TicTacToePlayer
   @@marker_choices = %w(X O)
   attr_reader :marker
   attr_accessor :score, :name
-  def initialize(board)
+  def initialize
     set_name
     set_marker
-    @board = board
     @score = Score.new
   end
 
@@ -168,7 +166,7 @@ class TicTacToePlayer
 end
 
 class Human < TicTacToePlayer
-  include Join
+  include Displayable
   def set_name
     n = nil
     loop do
@@ -190,27 +188,19 @@ class Human < TicTacToePlayer
     @marker = TicTacToePlayer.marker_choices.delete mark
   end
 
-  def choose_square
-    puts "Choose a square from #{joinor(@board.unmarked_keys)}: "
+  def choose_square(board)
+    puts "Choose a square from #{joinor(board.unmarked_keys)}: "
     square = nil
     loop do
       square = gets.chomp.to_i
-      break if @board.unmarked_keys.include? square
+      break if board.unmarked_keys.include? square
       puts "Sorry, that's not an available square"
     end
-    @board[square] = marker
+    board[square] = marker
   end
 end
 
 class Computer < TicTacToePlayer
-  def initialize(board, opponent)
-    set_name
-    set_marker
-    @board = board
-    @score = Score.new
-    @opponent = opponent
-  end
-
   def set_name
     self.name = ['R2D2', 'Hal', 'Chappie', 'Sonny', 'Number 5'].sample
   end
@@ -219,36 +209,36 @@ class Computer < TicTacToePlayer
     @marker = TicTacToePlayer.marker_choices.first
   end
 
-  def choose_square
+  def choose_square(board, opponent_marker)
     # priority offense, then defense, then midddle, then simply random available
-    square = choose_offense? ||
-             choose_defense? ||
-             choose_middle_square? ||
-             choose_random_square
-    @board[square] = marker
+    square = choose_offense(board) ||
+             choose_defense(board, opponent_marker) ||
+             choose_middle_square(board) ||
+             choose_random_square(board)
+    board[square] = marker
   end
 
-  def choose_offense?
-    line = @board.line_with_two_identical_markers?(marker)
+  def choose_offense(board)
+    line = board.line_with_two_identical_markers(marker)
     if line
-      return @board.winning_key_for(line)
+      return board.winning_key_for(line)
     end
   end
 
-  def choose_defense?
-    line = @board.line_with_two_identical_markers?(@opponent.marker)
+  def choose_defense(board, opponent_marker)
+    line = board.line_with_two_identical_markers(opponent_marker)
     if line
-      return @board.winning_key_for(line)
+      return board.winning_key_for(line)
     end
   end
 
-  def choose_middle_square?
-    squares = @board.squares
-    return  squares.key(@board.middle_square) if @board.middle_square.unmarked?
+  def choose_middle_square(board)
+    squares = board.squares
+    return  squares.key(board.middle_square) if board.middle_square.unmarked?
   end
 
-  def choose_random_square
-    @board.unmarked_keys.sample
+  def choose_random_square(board)
+    board.unmarked_keys.sample
   end
 end
 
@@ -260,8 +250,8 @@ class TTTGame
   attr_reader :board, :human, :computer
   def initialize
     @board = Board.new
-    @human = Human.new @board
-    @computer = Computer.new @board, @human
+    @human = Human.new
+    @computer = Computer.new
     @current_marker = FIRST_TO_MOVE
   end
 
@@ -285,12 +275,7 @@ class TTTGame
       play_round
       update_scores
       display_result
-      if game_over?
-        reset_scores
-        break unless play_again?
-        reset
-        display_play_again_message
-      end
+      reset_scores if game_over?
       break unless play_again?
       reset
       display_play_again_message
@@ -348,10 +333,10 @@ class TTTGame
 
   def current_player_moves
     if human_turn?
-      @human.choose_square
+      @human.choose_square(@board)
       @current_marker = COMPUTER_MARKER
     else
-      @computer.choose_square
+      @computer.choose_square(@board, @human.marker)
       @current_marker = HUMAN_MARKER
     end
   end
