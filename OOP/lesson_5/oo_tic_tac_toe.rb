@@ -102,7 +102,8 @@ class Board
 
   def three_identical_markers?(squares)
     markers = squares.select(&:marked?).collect(&:marker)
-    return false if markers.size != 3 && markers.min == markers.max
+    return false if markers.size != 3
+    markers.min == markers.max
   end
 end
 
