@@ -29,15 +29,6 @@ class WordProblem
     values.empty? ? raise(ArgumentError, "Irrelevant problem!") : false
   end
 
-  def convert_to_operator(operator)
-    case operator
-    when 'plus' then '+'
-    when 'minus' then '-'
-    when 'multiplied' then '*'
-    when 'divided' then '/'
-    end
-  end
-
   def to_a
     remove_punctuation.split ' '
   end

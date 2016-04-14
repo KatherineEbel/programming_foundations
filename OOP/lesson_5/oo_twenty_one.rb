@@ -21,7 +21,7 @@ module TwentyOneHand
   end
 
   def hit(deck)
-    cards << deck.deal_card
+    @cards << deck.deal_card
   end
 
   def stay?
@@ -33,25 +33,25 @@ module TwentyOneHand
   end
 
   def total
-    sum = 0
+    total = 0
     cards.each do |card|
-      sum += card.value
-      if card.is_ace? && sum > TWENTY_ONE
-        sum -= 10
+      total += card.value
+      if card.ace? && sum > TWENTY_ONE
+        total -= 10
       end
     end
-    sum
+    total
   end
 
   def show_cards
-    cards = @cards.map { |card| card.name }
-    joinor(cards, ', ', 'and')
+    cards = @cards.map(&:name)
+    "#{name}'s Hand -- #{joinor(cards, ', ', 'and')}" + "\n" \
+      "Total: #{total}"
   end
 
   def discard
     @cards = []
   end
-
 end
 
 class Card
@@ -67,7 +67,7 @@ class Card
     name
   end
 
-  def is_ace?
+  def ace?
     name == 'A'
   end
 
@@ -84,6 +84,7 @@ class Participant
   include TwentyOneHand
   attr_reader :name
   def initialize
+    super
     set_name
   end
 end
@@ -98,22 +99,15 @@ class Player < Participant
     end
     @name = n
   end
-
-  def show_cards
-    super.prepend "#{name} has: "
-  end
 end
 
 class Dealer < Participant
   def set_name
     @name = ['R2D2', 'Hal', 'Chappie', 'Sonny', 'Number 5'].sample
   end
-  def first_card
-    "#{name} shows #{@cards.first.name}"
-  end
 
-  def show_cards
-    super.prepend "#{name} has: "
+  def first_card
+    "#{name} shows: #{@cards.first.name}"
   end
 end
 
@@ -147,17 +141,16 @@ class TwentyOneGame
   def initialize
     @dealer = Dealer.new
     @player = Player.new
+    @deck = Deck.new
   end
 
   def start
     display welcome_message
     loop do
-      discard_hands
-      @deck = Deck.new
       # what's the sequence of steps to execute the game play?
       play_round
       display result
-      break unless play_again?
+      play_again? ? reset : break
     end
     display goodbye_message
   end
@@ -191,7 +184,7 @@ class TwentyOneGame
   end
 
   def initial_hands
-    "#{@dealer.first_card}" + "\n" + "#{@player.show_cards}"
+    @dealer.first_card.to_s + "\n" + @player.show_cards.to_s
   end
 
   def player_turn
@@ -213,9 +206,9 @@ class TwentyOneGame
     end
   end
 
-  def show_busted_participant
-    @player.busted? ? "You busted!" : nil
-    @dealer.busted? ? "Dealer busted!" : nil
+  def busted_participant
+    @player.busted? ? "#{@player.name} busted!" : nil
+    @dealer.busted? ? "#{@dealer.name} busted!" : nil
   end
 
   def player_win?
@@ -229,19 +222,20 @@ class TwentyOneGame
   end
 
   def final_result
-    if player_win? then "You won!"
-    elsif dealer_win? then "Dealer won!"
+    if player_win? then "#{@player.name} Won!"
+    elsif dealer_win? then "#{@dealer.name} Won!"
     else "It's a tie!"
     end
   end
 
   def result
-    display "#{show_busted_participant} #{final_result}"
+    display busted_participant.to_s
+    display final_result.to_s
     display final_hands
   end
 
   def final_hands
-    "#{@player.show_cards}" + "\n" + "#{@dealer.show_cards}"
+    @player.show_cards.to_s + "\n" + @dealer.show_cards.to_s
   end
 
   def play_again?
@@ -253,6 +247,11 @@ class TwentyOneGame
       display "Sorry, please choose (y/n)"
     end
     answer == 'y'
+  end
+
+  def reset
+    @deck = Deck.new
+    discard_hands
   end
 
   def discard_hands
