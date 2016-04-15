@@ -49,8 +49,7 @@ class WordProblem
         OPERATORS[value]
       end
     end
-    converted_values.delete nil
-    converted_values
+    converted_values.compact
   end
 
   def answer
