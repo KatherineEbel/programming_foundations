@@ -1,0 +1,18 @@
+_ _ _ _ _ _ _ _
+_ W _ _ _ _ _ _
+_ _ _ _ _ _ _ _
+_ _ _ _ _ _ _ _
+_ _ _ _ _ _ _ _
+_ _ _ _ _ _ _ _
+_ _ _ _ _ _ B _
+_ _ _ _ _ _ _ _
+    BOARD
+
+    range x = queen x
+    range y = queen y
+    range right diag = queen x+/-y + 1 thru 8 x-/y+ - 1n
+
+    2, 4
+
+    (white: [1, 1], black: [6, 6])
+    (white: [0, 6], black: [1, 7])
