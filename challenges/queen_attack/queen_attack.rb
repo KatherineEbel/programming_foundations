@@ -2,6 +2,7 @@ require 'pry'
 # Board class is an 8x8 board with white and black markers
 class Board
   NUM_ROWS = 8
+  MARKERS = %w(W B).freeze
   attr_accessor :locations
   def initialize(white, black)
     @white = white
@@ -12,8 +13,8 @@ class Board
 
   def place_markers
     raise ArgumentError if @white.eql? @black
-    @locations[@white.first][@white.last] = "W"
-    @locations[@black.first][@black.last] = "B"
+    @locations[@white.first][@white.last] = MARKERS.first
+    @locations[@black.first][@black.last] = MARKERS.last
   end
 end
 
