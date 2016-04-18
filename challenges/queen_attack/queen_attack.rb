@@ -3,7 +3,7 @@ require 'pry'
 class Board
   NUM_ROWS = 8
   MARKERS = %w(W B).freeze
-  attr_accessor :locations
+  attr_reader :locations
   def initialize(white, black)
     @white = white
     @black = black
