@@ -11,6 +11,10 @@ class Board
     place_markers
   end
 
+  def to_s
+    @locations.map { |row| row.join(' ') }.join("\n")
+  end
+
   def place_markers
     raise ArgumentError if @white.eql? @black
     @locations[@white.first][@white.last] = MARKERS.first
@@ -30,7 +34,7 @@ class Queens
   end
 
   def to_s
-    @board.locations.map { |row| row.join(' ') }.join("\n")
+    @board.to_s
   end
 
   def attack?

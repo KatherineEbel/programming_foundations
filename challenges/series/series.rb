@@ -1,5 +1,3 @@
-require 'pry'
-
 class Series
   def initialize(value)
     @value = value
@@ -41,7 +39,3 @@ class Series
     length - size
   end
 end
-
- # series = Series.new('01234')
- #
- # p series.slices(2)
