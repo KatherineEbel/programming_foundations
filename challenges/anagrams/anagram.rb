@@ -13,10 +13,6 @@ class Anagram
 
   private
 
-  def ==(other)
-    @word == other
-  end
-
   def invalid?(word)
     word.length != @length || word.downcase == @word.downcase
   end
