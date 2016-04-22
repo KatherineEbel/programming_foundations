@@ -7,7 +7,7 @@ class Anagram
   def match(words)
     words.each.map do |word|
       next if invalid? word
-      word if sorted_matches?(word)
+      word if sorted_matches? word
     end.compact
   end
 
