@@ -14,7 +14,7 @@ class Anagram
   private
 
   def invalid?(word)
-    word.length != @length || word.downcase == @word.downcase
+    word.length != @length || @word.casecmp(word) == 0
   end
 
   def sorted_matches?(word)
